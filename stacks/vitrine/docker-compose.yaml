@@ -1,0 +1,55 @@
+version: '3.7'
+
+volumes:
+  web:
+  db:
+
+networks:
+  internal:
+  reverse:
+    external: true
+
+configs:
+  php-upload:
+    file: ./php-upload.ini
+
+services:
+  wordpress:
+    image: wordpress:6.1.1
+    configs:
+      - source: php-upload
+        target: /usr/local/etc/php/conf.d/php-upload.ini
+    volumes:
+      - web:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - internal
+      - reverse
+    deploy:
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.http.services.vitrine.loadBalancer.server.port=80'
+        - 'traefik.http.middlewares.vitrine.headers.sslHost=www.gsri.team'
+        - 'traefik.http.middlewares.vitrine.headers.sslRedirect=false'
+        - 'traefik.http.middlewares.vitrine.headers.sslForceHost=false'
+        - 'traefik.http.middlewares.vitrine.headers.stsSeconds=31536000'
+        - 'traefik.http.middlewares.vitrine.headers.stsIncludeSubdomains=false'
+        - 'traefik.http.middlewares.vitrine.headers.forceStsHeader=false'
+        - 'traefik.http.routers.vitrine.entrypoints=https'
+        - 'traefik.http.routers.vitrine.rule=Host(`www.gsri.team`,`gsri.team`)'
+        - 'traefik.http.routers.vitrine.middlewares=vitrine@docker'
+        - 'traefik.http.routers.vitrine.service=vitrine'
+        - 'traefik.http.routers.vitrine.tls.options=secure@file'
+        - 'traefik.http.routers.vitrine.tls.certResolver=gandi'
+        - 'traefik.http.routers.vitrine_unsecure.entrypoints=http'
+        - 'traefik.http.routers.vitrine_unsecure.rule=Host(`www.gsri.team`,`gsri.team`)'
+        - 'traefik.http.routers.vitrine_unsecure.middlewares=vitrine@docker'
+        - 'traefik.http.routers.vitrine_unsecure.service=vitrine'
+
+  db:
+    image: mariadb:10.10.2
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - internal

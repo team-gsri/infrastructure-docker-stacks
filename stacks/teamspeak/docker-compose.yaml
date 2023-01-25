@@ -1,0 +1,21 @@
+version: '3'
+
+volumes:
+  var:
+
+services:
+  teamspeak:
+    image: teamspeak:3.13.7
+    restart: always
+    ports:
+      - 9987:9987/udp
+      - 10011:10011
+      - 30033:30033
+    environment:
+      - TS3SERVER_DB_PLUGIN=ts3db_sqlite3
+      - TS3SERVER_DB_SQLCREATEPATH=create_sqlite
+      - TS3SERVER_DB_WAITUNTILREADY=30
+      - TS3SERVER_DB_CLIENTKEEPDAYS=30
+      - TS3SERVER_LICENSE=accept
+    volumes:
+      - var:/var/ts3server

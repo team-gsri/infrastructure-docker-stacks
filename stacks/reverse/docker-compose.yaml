@@ -1,0 +1,74 @@
+version: '3.7'
+
+configs:
+  dynamic:
+    file: ./dynamic.toml
+    name: dynamic-${STACK_VERSION}
+  static:
+    file: ./static.toml
+    name: static-${STACK_VERSION}
+
+# The reverse network must be definied as an external network
+# otherwise, you won't be able to update the traefik stack
+# unless you completely remove any other stacks using the network
+
+networks:
+  reverse:
+    external: true
+
+secrets:
+  gandi_v5:
+    file: /var/lib/secrets/gandi_v5
+    name: gandi-${STACK_VERSION}
+  acme_email:
+    file: /var/lib/secrets/acme_email
+    name: acme-${STACK_VERSION}
+
+services:
+  proxy:
+    configs:
+      - source: dynamic
+        target: /etc/traefik/dynamic.toml
+      - source: static
+        target: /etc/traefik/traefik.toml
+    deploy:
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.docker.network=reverse'
+        - 'traefik.http.services.dashboard.loadBalancer.server.port=8080'
+        - 'traefik.http.middlewares.dashboard.headers.sslHost=benelli.gsri.team'
+        - 'traefik.http.middlewares.dashboard.headers.sslRedirect=true'
+        - 'traefik.http.middlewares.dashboard.headers.sslForceHost=true'
+        - 'traefik.http.middlewares.dashboard.headers.stsSeconds=31536000'
+        - 'traefik.http.middlewares.dashboard.headers.stsIncludeSubdomains=true'
+        - 'traefik.http.middlewares.dashboard.headers.forceStsHeader=true'
+        - 'traefik.http.routers.dashboard.entrypoints=https'
+        - 'traefik.http.routers.dashboard.rule=Host(`benelli.gsri.team`)'
+        - 'traefik.http.routers.dashboard.middlewares=dashboard@docker'
+        - 'traefik.http.routers.dashboard.service=api@internal'
+        - 'traefik.http.routers.dashboard.tls.options=secure@file'
+        - 'traefik.http.routers.dashboard.tls.certResolver=gandi'
+        - 'traefik.http.routers.dashboard_unsecure.entrypoints=http'
+        - 'traefik.http.routers.dashboard_unsecure.rule=Host(`benelli.gsri.team`)'
+        - 'traefik.http.routers.dashboard_unsecure.middlewares=dashboard@docker'
+        - 'traefik.http.routers.dashboard_unsecure.service=api@internal'
+    environment:
+      - GANDIV5_API_KEY_FILE=/run/secrets/gandi_v5
+    image: traefik:v2.9.6
+    networks:
+      - reverse
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host # required to get client public ip rather than bridge ip
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host # required to get client public ip rather than bridge ip
+    secrets:
+      - gandi_v5
+      - acme_email
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/traefik/acme.json:/acme.json

@@ -1,0 +1,25 @@
+[accessLog]
+  format = "json"
+  
+[api]
+  dashboard = true
+  insecure = false
+
+[certificatesResolvers.gandi.acme]
+  storage = "acme.json"
+  [certificatesResolvers.gandi.acme.dnsChallenge]
+    provider = "gandiv5"
+
+[entryPoints]
+  [entryPoints.https]
+    address = ":443"
+  [entryPoints.http]
+    address = ":80"
+
+[providers]
+  [providers.docker]
+    swarmMode = true
+    exposedByDefault = false    
+  [providers.file]
+    filename = "/etc/traefik/dynamic.toml"
+

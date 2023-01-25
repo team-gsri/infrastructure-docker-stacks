@@ -1,0 +1,23 @@
+name: Stack deployment workflow
+
+on:
+  workflow_call:
+    inputs:
+      compose:
+        type: string
+        required: true
+        description: Path to the docker-compose file to deploy
+      stack:
+        type: string
+        required: true
+        description: Name of the docker stack to deploy
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout source files
+        uses: actions/checkout@v3
+
+      - run: docker stack deploy --prune --compose-file ${{ inputs.compose }} ${{ inputs.stack }}
+        name: Deploy Docker Swarm stack

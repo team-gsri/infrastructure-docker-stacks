@@ -1,0 +1,34 @@
+version: '3.7'
+
+networks:
+  reverse:
+    external: true
+
+services:
+  nginx:
+    image: nginx:1.23.3-alpine-slim
+    deploy:
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.docker.network=reverse'
+        - 'traefik.http.services.cdn.loadBalancer.server.port=80'
+        - 'traefik.http.middlewares.cdn.headers.sslHost=cdn.gsri.team'
+        - 'traefik.http.middlewares.cdn.headers.sslRedirect=true'
+        - 'traefik.http.middlewares.cdn.headers.sslForceHost=true'
+        - 'traefik.http.middlewares.cdn.headers.stsSeconds=31536000'
+        - 'traefik.http.middlewares.cdn.headers.stsIncludeSubdomains=true'
+        - 'traefik.http.middlewares.cdn.headers.forceStsHeader=true'
+        - 'traefik.http.routers.cdn.entrypoints=https'
+        - 'traefik.http.routers.cdn.rule=Host(`cdn.gsri.team`)'
+        - 'traefik.http.routers.cdn.middlewares=cdn@docker'
+        - 'traefik.http.routers.cdn.service=cdn'
+        - 'traefik.http.routers.cdn.tls.options=secure@file'
+        - 'traefik.http.routers.cdn.tls.certResolver=gandi'
+        - 'traefik.http.routers.cdn_unsecure.entrypoints=http'
+        - 'traefik.http.routers.cdn_unsecure.rule=Host(`cdn.gsri.team`)'
+        - 'traefik.http.routers.cdn_unsecure.middlewares=cdn@docker'
+        - 'traefik.http.routers.cdn_unsecure.service=cdn'
+    networks:
+      - reverse
+    volumes:
+      - /srv/cdn:/usr/share/nginx/html:ro
