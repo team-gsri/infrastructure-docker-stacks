@@ -1,0 +1,15 @@
+name: Deploy vitrine
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "stacks/vitrine/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_deploy.yaml
+    with:
+      stack: vitrine
+      compose: stacks/vitrine/docker-compose.yaml

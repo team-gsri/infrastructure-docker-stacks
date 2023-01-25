@@ -1,0 +1,15 @@
+name: Deploy cdn
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "stacks/cdn/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_deploy.yaml
+    with:
+      stack: cdn
+      compose: stacks/cdn/docker-compose.yaml

@@ -1,0 +1,15 @@
+name: Deploy teamspeak
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "stacks/teamspeak/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_deploy.yaml
+    with:
+      stack: teamspeak
+      compose: stacks/teamspeak/docker-compose.yaml

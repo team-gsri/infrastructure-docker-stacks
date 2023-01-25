@@ -1,0 +1,15 @@
+name: Deploy mods
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "stacks/mods/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_deploy.yaml
+    with:
+      stack: mods
+      compose: stacks/mods/docker-compose.yaml
