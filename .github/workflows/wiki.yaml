@@ -1,0 +1,15 @@
+name: Deploy wiki
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "stacks/wiki/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_deploy.yaml
+    with:
+      stack: wiki
+      compose: stacks/wiki/docker-compose.yaml

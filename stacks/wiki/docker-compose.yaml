@@ -1,0 +1,37 @@
+version: "3.7"
+
+networks:
+  reverse:
+    external: true
+
+volumes:
+  data:
+
+services:
+  dokuwiki:
+    image: docker.io/bitnami/dokuwiki:20220731
+    volumes:
+      - data:/bitnami/dokuwiki
+    networks:
+      - reverse
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=reverse"
+        - "traefik.http.services.wiki.loadBalancer.server.port=8080"
+        - "traefik.http.middlewares.wiki.headers.sslHost=wiki.gsri.team"
+        - "traefik.http.middlewares.wiki.headers.sslRedirect=true"
+        - "traefik.http.middlewares.wiki.headers.sslForceHost=true"
+        - "traefik.http.middlewares.wiki.headers.stsSeconds=31536000"
+        - "traefik.http.middlewares.wiki.headers.stsIncludeSubdomains=true"
+        - "traefik.http.middlewares.wiki.headers.forceStsHeader=true"
+        - "traefik.http.routers.wiki.entrypoints=https"
+        - "traefik.http.routers.wiki.rule=Host(`wiki.gsri.team`)"
+        - "traefik.http.routers.wiki.middlewares=wiki@docker"
+        - "traefik.http.routers.wiki.service=wiki"
+        - "traefik.http.routers.wiki.tls.options=secure@file"
+        - "traefik.http.routers.wiki.tls.certResolver=gandi"
+        - "traefik.http.routers.wiki_unsecure.entrypoints=http"
+        - "traefik.http.routers.wiki_unsecure.rule=Host(`wiki.gsri.team`)"
+        - "traefik.http.routers.wiki_unsecure.middlewares=wiki@docker"
+        - "traefik.http.routers.wiki_unsecure.service=wiki"
