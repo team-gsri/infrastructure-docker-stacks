@@ -12,6 +12,9 @@ on:
         required: true
         description: Name of the docker stack to deploy
 
+env:
+  STACK_VERSION: ${{ github.run_id }}
+
 jobs:
   build:
     runs-on:
