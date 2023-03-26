@@ -54,7 +54,7 @@ services:
         - 'traefik.http.routers.dashboard_unsecure.service=api@internal'
     environment:
       - GANDIV5_API_KEY_FILE=/run/secrets/gandi_v5
-    image: traefik:v2.9.8
+    image: traefik:v2.9.9
     networks:
       - reverse
     ports:
