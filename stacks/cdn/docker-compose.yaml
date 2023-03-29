@@ -6,7 +6,7 @@ networks:
 
 services:
   nginx:
-    image: nginx:1.23.3-alpine-slim
+    image: nginx:1.23.4-alpine-slim
     deploy:
       labels:
         - 'traefik.enable=true'
