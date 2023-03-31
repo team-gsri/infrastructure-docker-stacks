@@ -15,7 +15,7 @@ configs:
 
 services:
   wordpress:
-    image: wordpress:6.1.1
+    image: wordpress:6.2.0
     configs:
       - source: php-upload
         target: /usr/local/etc/php/conf.d/php-upload.ini
