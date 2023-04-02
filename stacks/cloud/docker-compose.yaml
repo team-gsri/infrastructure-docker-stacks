@@ -11,7 +11,7 @@ volumes:
 
 services:
   nextcloud:
-    image: nextcloud:25.0.4
+    image: nextcloud:26.0.0
     volumes:
       - web:/var/www/html
     networks:
