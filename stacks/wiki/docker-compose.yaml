@@ -9,7 +9,7 @@ volumes:
 
 services:
   dokuwiki:
-    image: docker.io/bitnami/dokuwiki:20220731
+    image: docker.io/bitnami/dokuwiki:20230404
     volumes:
       - data:/bitnami/dokuwiki
     networks:
