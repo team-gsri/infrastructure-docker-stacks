@@ -1,0 +1,15 @@
+name: Deploy cron
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "stacks/cron/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_deploy.yaml
+    with:
+      stack: cron
+      compose: stacks/cron/docker-compose.yaml

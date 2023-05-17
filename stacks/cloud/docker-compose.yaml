@@ -46,3 +46,19 @@ services:
       - db:/var/lib/mysql
     networks:
       - internal
+
+ cron:
+    image: nextcloud:26.0.1
+    command: /usr/local/bin/php /var/www/html/cron.php
+    volumes:
+      - web:/var/www/html
+    networks:
+      - internal
+    deploy:
+      labels:
+        - "swarm.cronjob.enable=true"
+        - "swarm.cronjob.schedule=*/5 * * * *"
+        - "swarm.cronjob.skip-running=true"
+      replicas: 0
+      restart_policy:
+        condition: none
