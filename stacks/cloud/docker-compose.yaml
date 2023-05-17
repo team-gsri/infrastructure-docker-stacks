@@ -47,7 +47,7 @@ services:
     networks:
       - internal
 
- cron:
+  cron:
     image: nextcloud:26.0.1
     command: /usr/local/bin/php /var/www/html/cron.php
     volumes:
