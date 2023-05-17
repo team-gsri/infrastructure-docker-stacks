@@ -50,7 +50,7 @@ services:
   cron:
     image: nextcloud:26.0.1
     command: /usr/local/bin/php /var/www/html/cron.php
-    user: 33
+    user: '33'
     volumes:
       - web:/var/www/html
     networks:
