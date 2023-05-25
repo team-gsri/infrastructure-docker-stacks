@@ -1,0 +1,75 @@
+version: '3.7'
+
+configs:
+  client:
+    file: ./client.json
+    name: client-${STACK_VERSION}
+  nginx:
+    file: ./nginx.conf
+    name: nginx-${STACK_VERSION}
+
+networks:
+  client:
+  personnels:
+  reverse:
+    external: true
+
+secrets:
+  personnels-postgres:
+    file: /var/opt/docker/secrets/personnels-postgres
+    name: personnels-postgres-${STACK_VERSION}
+  personnels-appsettings:
+    file: /var/opt/docker/secrets/personnels-appsettings
+    name: personnels-appsettings-${STACK_VERSION}
+
+services:
+
+  api-personnels:
+    image: ghcr.io/team-gsri/apps-api-personnels:0.1.1
+    networks:
+      - client
+      - personnels
+    secrets:
+      - source: personnels-appsettings
+        target: /app/appsettings.json
+
+  client:
+    configs:
+      - source: client
+        target: /srv/www/assets/config.json
+      - source: nginx
+        target: /etc/nginx/nginx.conf
+    deploy:
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.docker.network=reverse'
+        - 'traefik.http.services.admin.loadBalancer.server.port=80'
+        - 'traefik.http.middlewares.admin.headers.sslHost=admin.gsri.team'
+        - 'traefik.http.middlewares.admin.headers.sslRedirect=true'
+        - 'traefik.http.middlewares.admin.headers.sslForceHost=true'
+        - 'traefik.http.middlewares.admin.headers.stsSeconds=31536000'
+        - 'traefik.http.middlewares.admin.headers.stsIncludeSubdomains=true'
+        - 'traefik.http.middlewares.admin.headers.forceStsHeader=true'
+        - 'traefik.http.routers.admin.entrypoints=https'
+        - 'traefik.http.routers.admin.rule=Host(`admin.gsri.team`)'
+        - 'traefik.http.routers.admin.middlewares=admin@docker'
+        - 'traefik.http.routers.admin.service=admin'
+        - 'traefik.http.routers.admin.tls.options=secure@file'
+        - 'traefik.http.routers.admin.tls.certResolver=gandi'
+        - 'traefik.http.routers.admin_unsecure.entrypoints=http'
+        - 'traefik.http.routers.admin_unsecure.rule=Host(`admin.gsri.team`)'
+        - 'traefik.http.routers.admin_unsecure.middlewares=admin@docker'
+        - 'traefik.http.routers.admin_unsecure.service=admin'
+    image: ghcr.io/team-gsri/apps-admin-client:0.1.0
+    networks:
+      - reverse
+      - client
+
+  db-personnels:
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/personnels-postgres
+    image: postgres:15
+    networks:
+      - personnels
+    secrets:
+      - personnels-postgres
