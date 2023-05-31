@@ -60,7 +60,7 @@ services:
         - 'traefik.http.routers.admin_unsecure.rule=Host(`admin.gsri.team`)'
         - 'traefik.http.routers.admin_unsecure.middlewares=admin@docker'
         - 'traefik.http.routers.admin_unsecure.service=admin'
-    image: ghcr.io/team-gsri/apps-admin-client:0.1.0
+    image: ghcr.io/team-gsri/apps-admin-client:0.1.1
     networks:
       - reverse
       - client
