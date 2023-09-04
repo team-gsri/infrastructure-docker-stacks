@@ -48,7 +48,7 @@ services:
         - 'traefik.http.routers.vitrine_unsecure.service=vitrine'
 
   db:
-    image: mariadb:11.0.3
+    image: mariadb:11.1.2
     volumes:
       - db:/var/lib/mysql
     networks:
