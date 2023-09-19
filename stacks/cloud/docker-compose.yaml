@@ -11,7 +11,7 @@ volumes:
 
 services:
   nextcloud:
-    image: nextcloud:27.0.2
+    image: nextcloud:27.1.0
     volumes:
       - web:/var/www/html
     networks:
@@ -48,7 +48,7 @@ services:
       - internal
 
   cron:
-    image: nextcloud:27.0.2
+    image: nextcloud:27.1.0
     command: /usr/local/bin/php /var/www/html/cron.php
     user: '33'
     volumes:
