@@ -22,7 +22,7 @@ jobs:
       - Linux
     steps:
       - name: Checkout source files
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
       - run: docker stack deploy --prune --compose-file ${{ inputs.compose }} ${{ inputs.stack }}
         name: Deploy Docker Swarm stack
