@@ -68,7 +68,7 @@ services:
   db-personnels:
     environment:
       - POSTGRES_PASSWORD_FILE=/run/secrets/personnels-postgres
-    image: postgres:16.0
+    image: postgres:16.1
     networks:
       - personnels
     secrets:
