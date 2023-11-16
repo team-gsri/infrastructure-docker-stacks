@@ -8,6 +8,11 @@
       "matchPackageNames": ["mariadb"],
       "matchPaths": ["stacks/cloud/**"],
       "allowedVersions": "<=10.6"
+    },    
+    {
+      "matchUpdateTypes": ["patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
     }
   ]
 }
